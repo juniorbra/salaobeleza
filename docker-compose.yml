@@ -4,7 +4,7 @@ services:
   # Serviço da aplicação web
   app:
     image: nginx:alpine
-    # Usando uma imagem pública do nginx temporariamente
+    # Usando nginx para servir a aplicação React
     
     networks:
       - portainer ## Nome da rede interna
@@ -13,6 +13,16 @@ services:
       - NODE_ENV=production
       - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
       - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
+    
+    configs:
+      - source: nginx_config
+        target: /etc/nginx/conf.d/default.conf
+      - source: app_html
+        target: /usr/share/nginx/html/index.html
+      - source: app_css
+        target: /usr/share/nginx/html/assets/index.css
+      - source: app_js
+        target: /usr/share/nginx/html/assets/index.js
 
     deploy:
       mode: replicated
@@ -28,6 +38,108 @@ services:
         - traefik.http.services.salaobeleza.loadbalancer.server.port=80
         - traefik.http.services.salaobeleza.loadbalancer.passHostHeader=true
         - traefik.http.routers.salaobeleza.service=salaobeleza
+
+configs:
+  nginx_config:
+    content: |
+      server {
+          listen 80;
+          root /usr/share/nginx/html;
+          index index.html;
+          
+          location / {
+              try_files $uri $uri/ /index.html;
+          }
+          
+          # Configuração para cache e compressão
+          gzip on;
+          gzip_vary on;
+          gzip_min_length 10240;
+          gzip_proxied expired no-cache no-store private auth;
+          gzip_types text/plain text/css text/xml text/javascript application/javascript application/x-javascript application/xml;
+          gzip_disable "MSIE [1-6]\.";
+      }
+  
+  app_html:
+    content: |
+      <!DOCTYPE html>
+      <html lang="pt-BR">
+        <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>Salão Beleza - Login</title>
+          <link rel="stylesheet" href="/assets/index.css">
+        </head>
+        <body>
+          <div id="root">
+            <div class="auth-container">
+              <div class="auth-card">
+                <h2>Salão Beleza</h2>
+                <p>Bem-vindo ao sistema de gerenciamento do Salão Beleza!</p>
+                <p>O sistema completo estará disponível em breve.</p>
+                <p>Para mais informações, entre em contato conosco.</p>
+              </div>
+            </div>
+          </div>
+          <script src="/assets/index.js"></script>
+        </body>
+      </html>
+  
+  app_css:
+    content: |
+      :root {
+        --primary-color: #ff6b6b;
+        --secondary-color: #4ecdc4;
+        --accent-color: #ffe66d;
+        --text-color: #333;
+        --light-bg: #f7f7f7;
+      }
+      
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      
+      .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+      }
+      
+      .auth-card {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        width: 100%;
+        max-width: 450px;
+        text-align: center;
+      }
+      
+      .auth-card h2 {
+        color: var(--primary-color);
+        margin-bottom: 20px;
+        font-size: 28px;
+      }
+      
+      .auth-card p {
+        margin: 15px 0;
+        color: var(--text-color);
+      }
+  
+  app_js:
+    content: |
+      // Script básico para a página temporária
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('Salão Beleza - Aplicação carregada');
+      });
 
 networks:
   portainer: ## Nome da rede interna
