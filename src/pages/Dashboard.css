@@ -65,9 +65,12 @@
   color: #333;
 }
 
-.add-btn {
-  background-color: #4ecdc4;
-  color: white;
+.action-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.add-btn, .example-btn, .refresh-btn {
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 4px;
@@ -79,8 +82,32 @@
   transition: background-color 0.3s;
 }
 
+.add-btn {
+  background-color: #4ecdc4;
+  color: white;
+}
+
 .add-btn:hover {
   background-color: #3dbeb5;
+}
+
+.example-btn {
+  background-color: #ffe66d;
+  color: #333;
+}
+
+.example-btn:hover {
+  background-color: #ffd700;
+}
+
+.refresh-btn {
+  background-color: #f8f9fa;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.refresh-btn:hover {
+  background-color: #e9ecef;
 }
 
 /* Estado de carregamento */
@@ -105,6 +132,13 @@
 .empty-state p {
   margin-bottom: 1.5rem;
   color: #666;
+}
+
+.empty-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
 }
 
 /* Tabela de serviços */
@@ -217,6 +251,11 @@
     gap: 1rem;
   }
   
+  .action-buttons {
+    width: 100%;
+    flex-direction: column;
+  }
+  
   .servicos-table th,
   .servicos-table td {
     padding: 0.75rem 0.5rem;
@@ -224,5 +263,10 @@
   
   .modal-content {
     width: 90%;
+  }
+  
+  .empty-actions {
+    flex-direction: column;
+    width: 100%;
   }
 }

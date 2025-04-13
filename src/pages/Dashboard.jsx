@@ -22,6 +22,7 @@ export default function Dashboard() {
     setLoading(true);
     try {
       const data = await salaoService.getAll();
+      console.log("Serviços carregados:", data); // Log para debug
       setServicos(data);
       setError(null);
     } catch (err) {
@@ -88,6 +89,27 @@ export default function Dashboard() {
     return `R$ ${parseFloat(price).toFixed(2).replace('.', ',')}`;
   };
 
+  // Criar serviço de exemplo para teste
+  const criarServicoExemplo = async () => {
+    try {
+      const servicoExemplo = {
+        id_servico: "CORTE001",
+        nome_descricao: "Corte de Cabelo Feminino",
+        categoria: "Cabelo",
+        duracao: "45 min",
+        preco: "80.00",
+        profissionais: "Maria, Ana"
+      };
+      
+      const novoServico = await salaoService.create(servicoExemplo);
+      setServicos([...servicos, novoServico]);
+      alert("Serviço de exemplo criado com sucesso!");
+    } catch (err) {
+      console.error("Erro ao criar serviço de exemplo:", err);
+      alert("Erro ao criar serviço de exemplo: " + err.message);
+    }
+  };
+
   return (
     <div className="dashboard">
       <header className="dashboard-header">
@@ -103,7 +125,11 @@ export default function Dashboard() {
 
         <div className="actions-bar">
           <h2>Serviços Disponíveis</h2>
-          <button onClick={handleAddNew} className="add-btn">Adicionar Novo Serviço</button>
+          <div className="action-buttons">
+            <button onClick={handleAddNew} className="add-btn">Adicionar Novo Serviço</button>
+            <button onClick={criarServicoExemplo} className="example-btn">Criar Serviço de Exemplo</button>
+            <button onClick={loadServicos} className="refresh-btn">Atualizar Lista</button>
+          </div>
         </div>
 
         {loading ? (
@@ -111,7 +137,11 @@ export default function Dashboard() {
         ) : servicos.length === 0 ? (
           <div className="empty-state">
             <p>Nenhum serviço cadastrado.</p>
-            <button onClick={handleAddNew} className="add-btn">Adicionar Serviço</button>
+            <p>Clique em "Adicionar Novo Serviço" para começar ou use "Criar Serviço de Exemplo" para teste.</p>
+            <div className="empty-actions">
+              <button onClick={handleAddNew} className="add-btn">Adicionar Serviço</button>
+              <button onClick={criarServicoExemplo} className="example-btn">Criar Serviço de Exemplo</button>
+            </div>
           </div>
         ) : (
           <div className="servicos-table-container">
