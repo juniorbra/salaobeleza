@@ -14,11 +14,17 @@ COPY . .
 # Construir a aplicação
 RUN npm run build
 
+# Verificar o conteúdo da pasta dist após a build
+RUN ls -la /app/dist
+
 # Estágio de produção
 FROM nginx:alpine
 
 # Copiar arquivos de build para o nginx
 COPY --from=build /app/dist /usr/share/nginx/html
+
+# Copiar o arquivo de fallback
+COPY --from=build /app/public/fallback.html /usr/share/nginx/html/fallback.html
 
 # Copiar configuração personalizada do nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf

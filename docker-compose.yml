@@ -3,7 +3,7 @@ version: '3.7'
 services:
   # Serviço da aplicação web
   app:
-    image: hvidigaljr/salaobeleza:v1.0.0
+    image: hvidigaljr/salaobeleza:v1.0.1
     # Usando a imagem do Docker Hub
     
     networks:
