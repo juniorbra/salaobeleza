@@ -1,38 +1,35 @@
-version: '3.8'
+version: '3.7'
 
 services:
   # Serviço da aplicação web
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/juniorbra/salaobeleza:v1.0.1
     container_name: salaobeleza-app
-    ports:
-      - "80:80"
-    restart: unless-stopped
+    
+    networks:
+      - portainer ## Nome da rede interna
+
     environment:
       - NODE_ENV=production
-    networks:
-      - salaobeleza-network
+      - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+      - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
 
-  # Você pode adicionar outros serviços aqui, como um banco de dados local se necessário
-  # Por exemplo:
-  # db:
-  #   image: postgres:14
-  #   container_name: salaobeleza-db
-  #   restart: unless-stopped
-  #   environment:
-  #     - POSTGRES_PASSWORD=postgres
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_DB=salaobeleza
-  #   volumes:
-  #     - postgres-data:/var/lib/postgresql/data
-  #   networks:
-  #     - salaobeleza-network
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.salaobeleza.rule=Host(`salaodebeleza.zobot.top`)
+        - traefik.http.routers.salaobeleza.entrypoints=websecure
+        - traefik.http.routers.salaobeleza.tls.certresolver=letsencryptresolver
+        - traefik.http.services.salaobeleza.loadbalancer.server.port=80
+        - traefik.http.services.salaobeleza.loadbalancer.passHostHeader=true
+        - traefik.http.routers.salaobeleza.service=salaobeleza
 
 networks:
-  salaobeleza-network:
-    driver: bridge
-
-# volumes:
-#   postgres-data:
+  portainer: ## Nome da rede interna
+    external: true
+    name: portainer ## Nome da rede interna
