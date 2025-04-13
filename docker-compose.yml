@@ -22,12 +22,19 @@ services:
           - node.role == manager
       labels:
         - traefik.enable=true
+        # Configuração básica
         - traefik.http.routers.salaobeleza.rule=Host(`salaodebeleza.zobot.top`)
         - traefik.http.routers.salaobeleza.entrypoints=websecure
         - traefik.http.routers.salaobeleza.tls.certresolver=letsencryptresolver
         - traefik.http.services.salaobeleza.loadbalancer.server.port=80
-        - traefik.http.services.salaobeleza.loadbalancer.passHostHeader=true
-        - traefik.http.routers.salaobeleza.service=salaobeleza
+        # Configuração adicional para garantir que o Traefik reconheça o serviço
+        - traefik.docker.network=portainer
+        - traefik.http.middlewares.salaobeleza-redirect.redirectscheme.scheme=https
+        - traefik.http.middlewares.salaobeleza-redirect.redirectscheme.permanent=true
+        # Rota HTTP para redirecionamento para HTTPS
+        - traefik.http.routers.salaobeleza-http.rule=Host(`salaodebeleza.zobot.top`)
+        - traefik.http.routers.salaobeleza-http.entrypoints=web
+        - traefik.http.routers.salaobeleza-http.middlewares=salaobeleza-redirect
 
 networks:
   portainer: ## Nome da rede interna
