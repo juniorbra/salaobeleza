@@ -12,10 +12,8 @@ RUN npm ci
 COPY . .
 
 # Definir variáveis de ambiente para o build
-ARG VITE_SUPABASE_URL
-ARG VITE_SUPABASE_ANON_KEY
-ENV VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
-ENV VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
+ENV VITE_SUPABASE_URL=""
+ENV VITE_SUPABASE_ANON_KEY=""
 
 # Construir a aplicação
 RUN npm run build
@@ -26,11 +24,10 @@ RUN ls -la /app/dist
 # Estágio de produção
 FROM nginx:alpine
 
-# Definir variáveis de ambiente também no contêiner de produção
-ARG VITE_SUPABASE_URL
-ARG VITE_SUPABASE_ANON_KEY
-ENV VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
-ENV VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
+# Definir variáveis de ambiente no contêiner de produção
+# Estas serão sobrescritas pelas variáveis definidas no Portainer
+ENV VITE_SUPABASE_URL=""
+ENV VITE_SUPABASE_ANON_KEY=""
 
 # Copiar arquivos de build para o nginx
 COPY --from=build /app/dist /usr/share/nginx/html

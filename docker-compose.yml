@@ -5,11 +5,8 @@ services:
   app:
     build:
       context: .
-      args:
-        - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
-        - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
-    image: hvidigaljr/salaobeleza:v1.0.8
-    # Usando a imagem do Docker Hub com credenciais fixas do Supabase
+    image: hvidigaljr/salaobeleza:v1.0.9
+    # Usando a imagem do Docker Hub sem credenciais embutidas
     
     networks:
       - portainer ## Nome da rede interna
