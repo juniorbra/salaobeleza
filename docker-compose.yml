@@ -3,7 +3,12 @@ version: '3.7'
 services:
   # Serviço da aplicação web
   app:
-    image: hvidigaljr/salaobeleza:v1.0.1
+    build:
+      context: .
+      args:
+        - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+        - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
+    image: hvidigaljr/salaobeleza:v1.0.2
     # Usando a imagem do Docker Hub
     
     networks:
