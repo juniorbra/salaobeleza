@@ -3,7 +3,9 @@ version: '3.7'
 services:
   # Serviço da aplicação web
   app:
-    image: ghcr.io/juniorbra/salaobeleza:v1.0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: salaobeleza-app
     
     networks:
