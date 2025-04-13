@@ -8,8 +8,8 @@ services:
       args:
         - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
         - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
-    image: hvidigaljr/salaobeleza:v1.0.2
-    # Usando a imagem do Docker Hub
+    image: hvidigaljr/salaobeleza:v1.0.3
+    # Usando a imagem do Docker Hub com funcionalidades CRUD
     
     networks:
       - portainer ## Nome da rede interna
