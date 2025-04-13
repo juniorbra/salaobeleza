@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  # Serviço da aplicação web
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: salaobeleza-app
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    networks:
+      - salaobeleza-network
+
+  # Você pode adicionar outros serviços aqui, como um banco de dados local se necessário
+  # Por exemplo:
+  # db:
+  #   image: postgres:14
+  #   container_name: salaobeleza-db
+  #   restart: unless-stopped
+  #   environment:
+  #     - POSTGRES_PASSWORD=postgres
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_DB=salaobeleza
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
+  #   networks:
+  #     - salaobeleza-network
+
+networks:
+  salaobeleza-network:
+    driver: bridge
+
+# volumes:
+#   postgres-data:
