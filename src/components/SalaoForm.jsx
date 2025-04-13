@@ -4,12 +4,12 @@ import './SalaoForm.css';
 export default function SalaoForm({ record, onSubmit, onCancel }) {
   // Estado inicial do formulário
   const initialState = record || {
-    nome: '',
-    endereco: '',
-    telefone: '',
-    email: '',
-    horario_funcionamento: '',
-    servicos_oferecidos: ''
+    id_servico: '',
+    nome_descricao: '',
+    categoria: '',
+    duracao: '',
+    preco: '',
+    profissionais: ''
   };
 
   const [formData, setFormData] = useState(initialState);
@@ -53,79 +53,82 @@ export default function SalaoForm({ record, onSubmit, onCancel }) {
 
   return (
     <div className="salao-form">
-      <h2>{record ? 'Editar Salão' : 'Novo Salão'}</h2>
+      <h2>{record ? 'Editar Serviço' : 'Novo Serviço'}</h2>
       
       {error && <div className="error-message">{error}</div>}
       
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="nome">Nome</label>
+          <label htmlFor="id_servico">ID do Serviço</label>
           <input
             type="text"
-            id="nome"
-            name="nome"
-            value={formData.nome}
+            id="id_servico"
+            name="id_servico"
+            value={formData.id_servico}
             onChange={handleChange}
             required
           />
         </div>
 
         <div className="form-group">
-          <label htmlFor="endereco">Endereço</label>
+          <label htmlFor="nome_descricao">Nome/Descrição</label>
           <input
             type="text"
-            id="endereco"
-            name="endereco"
-            value={formData.endereco}
+            id="nome_descricao"
+            name="nome_descricao"
+            value={formData.nome_descricao}
             onChange={handleChange}
             required
           />
         </div>
 
         <div className="form-group">
-          <label htmlFor="telefone">Telefone</label>
+          <label htmlFor="categoria">Categoria</label>
           <input
             type="text"
-            id="telefone"
-            name="telefone"
-            value={formData.telefone}
+            id="categoria"
+            name="categoria"
+            value={formData.categoria}
             onChange={handleChange}
             required
           />
         </div>
 
         <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="horario_funcionamento">Horário de Funcionamento</label>
+          <label htmlFor="duracao">Duração</label>
           <input
             type="text"
-            id="horario_funcionamento"
-            name="horario_funcionamento"
-            value={formData.horario_funcionamento}
+            id="duracao"
+            name="duracao"
+            value={formData.duracao}
             onChange={handleChange}
             required
+            placeholder="Ex: 30 min"
           />
         </div>
 
         <div className="form-group">
-          <label htmlFor="servicos_oferecidos">Serviços Oferecidos</label>
+          <label htmlFor="preco">Preço</label>
+          <input
+            type="text"
+            id="preco"
+            name="preco"
+            value={formData.preco}
+            onChange={handleChange}
+            required
+            placeholder="Ex: 50.00"
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="profissionais">Profissionais</label>
           <textarea
-            id="servicos_oferecidos"
-            name="servicos_oferecidos"
-            value={formData.servicos_oferecidos}
+            id="profissionais"
+            name="profissionais"
+            value={formData.profissionais}
             onChange={handleChange}
-            rows="4"
+            rows="3"
+            placeholder="Nomes dos profissionais que realizam este serviço"
           />
         </div>
 

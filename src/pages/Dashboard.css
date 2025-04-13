@@ -1,157 +1,182 @@
-/* Dashboard.css */
-.dashboard-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+/* Estilos gerais do Dashboard */
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Cabeçalho do Dashboard */
 .dashboard-header {
+  background-color: #ff6b6b;
+  color: white;
+  padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .dashboard-header h1 {
-  color: #ff6b6b;
   margin: 0;
-  font-size: 24px;
+  font-size: 1.5rem;
 }
 
-.logout-button {
-  background-color: #f8f9fa;
-  color: #333;
-  border: 1px solid #ddd;
-  padding: 8px 16px;
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logout-btn {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s;
+  transition: background-color 0.3s;
 }
 
-.logout-button:hover {
-  background-color: #e9ecef;
+.logout-btn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
-.error-message {
-  background-color: #f8d7da;
-  color: #721c24;
-  padding: 12px;
-  border-radius: 4px;
-  margin-bottom: 20px;
-  border: 1px solid #f5c6cb;
+/* Conteúdo principal */
+.dashboard-content {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
 }
 
-.action-bar {
+/* Barra de ações */
+.actions-bar {
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 20px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
 }
 
-.add-button {
+.actions-bar h2 {
+  margin: 0;
+  color: #333;
+}
+
+.add-btn {
   background-color: #4ecdc4;
   color: white;
   border: none;
-  padding: 10px 16px;
+  padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
   display: flex;
   align-items: center;
-  gap: 8px;
-  transition: background-color 0.2s;
+  gap: 0.5rem;
+  transition: background-color 0.3s;
 }
 
-.add-button:hover {
-  background-color: #3dbeb6;
+.add-btn:hover {
+  background-color: #3dbeb5;
 }
 
-.loading, .empty-state {
+/* Estado de carregamento */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #666;
+  font-style: italic;
+}
+
+/* Estado vazio */
+.empty-state {
   text-align: center;
-  padding: 40px;
-  color: #6c757d;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  margin-top: 20px;
-}
-
-.empty-state p {
-  margin: 0;
-  font-size: 16px;
-}
-
-.table-container {
-  overflow-x: auto;
-  background: white;
+  padding: 3rem;
+  background-color: white;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-.saloes-table {
+.empty-state p {
+  margin-bottom: 1.5rem;
+  color: #666;
+}
+
+/* Tabela de serviços */
+.servicos-table-container {
+  overflow-x: auto;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.servicos-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
 }
 
-.saloes-table th,
-.saloes-table td {
-  padding: 12px 15px;
+.servicos-table th,
+.servicos-table td {
+  padding: 1rem;
   text-align: left;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid #eee;
 }
 
-.saloes-table th {
-  background-color: #f8f9fa;
-  color: #495057;
+.servicos-table th {
+  background-color: #f9f9f9;
   font-weight: 600;
+  color: #555;
 }
 
-.saloes-table tr:last-child td {
+.servicos-table tr:last-child td {
   border-bottom: none;
 }
 
-.saloes-table tr:hover {
-  background-color: #f8f9fa;
+.servicos-table tr:hover {
+  background-color: #f9f9f9;
 }
 
+/* Coluna de ações */
 .actions {
   display: flex;
-  gap: 8px;
-  justify-content: flex-end;
+  gap: 0.5rem;
 }
 
-.edit-button, .delete-button {
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 13px;
-  cursor: pointer;
+.edit-btn,
+.delete-btn {
+  background: none;
   border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0.25rem;
+  border-radius: 4px;
   transition: background-color 0.2s;
 }
 
-.edit-button {
-  background-color: #4ecdc4;
-  color: white;
+.edit-btn:hover {
+  background-color: rgba(78, 205, 196, 0.1);
 }
 
-.edit-button:hover {
-  background-color: #3dbeb6;
+.delete-btn:hover {
+  background-color: rgba(255, 107, 107, 0.1);
 }
 
-.delete-button {
-  background-color: #ff6b6b;
-  color: white;
+/* Mensagem de erro */
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
 }
 
-.delete-button:hover {
-  background-color: #ff5252;
-}
-
-/* Modal de confirmação */
-.modal-backdrop {
+/* Modal para formulário */
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -164,68 +189,40 @@
   z-index: 1000;
 }
 
-.confirm-modal {
+.modal-content {
   background-color: white;
   border-radius: 8px;
-  padding: 24px;
-  width: 90%;
-  max-width: 400px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-}
-
-.confirm-modal h3 {
-  margin-top: 0;
-  color: #333;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 24px;
-}
-
-.cancel-button, .confirm-button {
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-  border: none;
-}
-
-.cancel-button {
-  background-color: #e9ecef;
-  color: #495057;
-}
-
-.confirm-button {
-  background-color: #ff6b6b;
-  color: white;
 }
 
 /* Responsividade */
 @media (max-width: 768px) {
   .dashboard-header {
     flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .dashboard-content {
+    padding: 1rem;
+  }
+  
+  .actions-bar {
+    flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    gap: 1rem;
   }
   
-  .logout-button {
-    align-self: flex-end;
+  .servicos-table th,
+  .servicos-table td {
+    padding: 0.75rem 0.5rem;
   }
   
-  .saloes-table th:nth-child(4),
-  .saloes-table td:nth-child(4) {
-    display: none;
-  }
-}
-
-@media (max-width: 576px) {
-  .saloes-table th:nth-child(3),
-  .saloes-table td:nth-child(3),
-  .saloes-table th:nth-child(5),
-  .saloes-table td:nth-child(5) {
-    display: none;
+  .modal-content {
+    width: 90%;
   }
 }

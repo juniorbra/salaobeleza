@@ -1,8 +1,8 @@
 import { supabase } from './supabaseClient';
 
-// Serviço para operações CRUD na tabela public.salaobeleza
+// Serviço para operações CRUD na tabela public.salaobeleza (serviços do salão)
 export const salaoService = {
-  // Buscar todos os registros
+  // Buscar todos os serviços
   getAll: async () => {
     const { data, error } = await supabase
       .from('salaobeleza')
@@ -13,7 +13,7 @@ export const salaoService = {
     return data;
   },
   
-  // Buscar um registro pelo ID
+  // Buscar um serviço pelo ID
   getById: async (id) => {
     const { data, error } = await supabase
       .from('salaobeleza')
@@ -25,18 +25,18 @@ export const salaoService = {
     return data;
   },
   
-  // Criar um novo registro
-  create: async (record) => {
+  // Criar um novo serviço
+  create: async (servico) => {
     const { data, error } = await supabase
       .from('salaobeleza')
-      .insert([record])
+      .insert([servico])
       .select();
     
     if (error) throw error;
     return data[0];
   },
   
-  // Atualizar um registro existente
+  // Atualizar um serviço existente
   update: async (id, updates) => {
     const { data, error } = await supabase
       .from('salaobeleza')
@@ -48,7 +48,7 @@ export const salaoService = {
     return data[0];
   },
   
-  // Excluir um registro
+  // Excluir um serviço
   delete: async (id) => {
     const { error } = await supabase
       .from('salaobeleza')
