@@ -15,13 +15,63 @@ export default function SalaoForm({ record, onSubmit, onCancel }) {
   const [formData, setFormData] = useState(initialState);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [profissionaisList, setProfissionaisList] = useState([]);
 
   // Atualizar o formulário se o registro mudar
   useEffect(() => {
     if (record) {
       setFormData(record);
+      
+      // Converter a string de profissionais para o formato de lista
+      if (record.profissionais) {
+        try {
+          // Tenta extrair os profissionais do formato JSON
+          const profArray = parseProfissionais(record.profissionais);
+          setProfissionaisList(profArray);
+        } catch (err) {
+          console.error("Erro ao processar profissionais:", err);
+          // Fallback: Divide a string por vírgulas se não for possível parsear
+          setProfissionaisList([{ id: '', nome: record.profissionais }]);
+        }
+      } else {
+        setProfissionaisList([{ id: '', nome: '' }]);
+      }
+    } else {
+      setProfissionaisList([{ id: '', nome: '' }]);
     }
   }, [record]);
+
+  // Função para extrair profissionais do formato JSON ou string
+  const parseProfissionais = (profString) => {
+    // Se for uma string vazia, retorna um array vazio
+    if (!profString) return [{ id: '', nome: '' }];
+    
+    // Verifica se é uma string que contém objetos JSON
+    if (profString.includes('"id":') || profString.includes("'id':")) {
+      try {
+        // Tenta converter para objeto JavaScript
+        const cleanString = profString.replace(/'/g, '"');
+        return JSON.parse(cleanString);
+      } catch (e) {
+        // Se falhar, tenta extrair usando regex
+        const profArray = [];
+        const regex = /\{.*?'id':\s*'(.*?)'.*?'nome':\s*'(.*?)'.*?\}/g;
+        let match;
+        
+        while ((match = regex.exec(profString)) !== null) {
+          profArray.push({ id: match[1], nome: match[2] });
+        }
+        
+        if (profArray.length > 0) {
+          return profArray;
+        }
+      }
+    }
+    
+    // Se não conseguir extrair como JSON, divide por vírgula
+    const nomes = profString.split(',').map(nome => nome.trim());
+    return nomes.map((nome, index) => ({ id: `${index + 1}`, nome }));
+  };
 
   // Lidar com mudanças nos campos do formulário
   const handleChange = (e) => {
@@ -32,6 +82,54 @@ export default function SalaoForm({ record, onSubmit, onCancel }) {
     }));
   };
 
+  // Lidar com mudanças nos campos de profissionais
+  const handleProfissionalChange = (index, field, value) => {
+    const updatedProfissionais = [...profissionaisList];
+    updatedProfissionais[index][field] = value;
+    setProfissionaisList(updatedProfissionais);
+    
+    // Atualiza o formData com a nova string de profissionais
+    const profissionaisString = formatProfissionaisToString(updatedProfissionais);
+    setFormData(prev => ({
+      ...prev,
+      profissionais: profissionaisString
+    }));
+  };
+
+  // Formatar a lista de profissionais para string no formato esperado pelo backend
+  const formatProfissionaisToString = (profList) => {
+    // Filtra profissionais sem nome
+    const validProfs = profList.filter(prof => prof.nome.trim() !== '');
+    
+    if (validProfs.length === 0) return '';
+    
+    // Formata como uma lista de objetos em string
+    return validProfs.map(prof => 
+      `{'id': '${prof.id}', 'nome': '${prof.nome}'}`
+    ).join(', ');
+  };
+
+  // Adicionar novo profissional
+  const addProfissional = () => {
+    setProfissionaisList([...profissionaisList, { id: '', nome: '' }]);
+  };
+
+  // Remover profissional
+  const removeProfissional = (index) => {
+    if (profissionaisList.length > 1) {
+      const updatedProfissionais = [...profissionaisList];
+      updatedProfissionais.splice(index, 1);
+      setProfissionaisList(updatedProfissionais);
+      
+      // Atualiza o formData com a nova string de profissionais
+      const profissionaisString = formatProfissionaisToString(updatedProfissionais);
+      setFormData(prev => ({
+        ...prev,
+        profissionais: profissionaisString
+      }));
+    }
+  };
+
   // Enviar o formulário
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,10 +137,17 @@ export default function SalaoForm({ record, onSubmit, onCancel }) {
     setError(null);
 
     try {
-      await onSubmit(formData);
+      // Formata os profissionais antes de enviar
+      const dataToSubmit = {
+        ...formData,
+        profissionais: formatProfissionaisToString(profissionaisList)
+      };
+      
+      await onSubmit(dataToSubmit);
       // Resetar o formulário após o envio bem-sucedido
       if (!record) {
         setFormData(initialState);
+        setProfissionaisList([{ id: '', nome: '' }]);
       }
     } catch (err) {
       setError(err.message || 'Ocorreu um erro ao salvar os dados.');
@@ -121,15 +226,42 @@ export default function SalaoForm({ record, onSubmit, onCancel }) {
         </div>
 
         <div className="form-group">
-          <label htmlFor="profissionais">Profissionais</label>
-          <textarea
-            id="profissionais"
-            name="profissionais"
-            value={formData.profissionais}
-            onChange={handleChange}
-            rows="3"
-            placeholder="Nomes dos profissionais que realizam este serviço"
-          />
+          <label>Profissionais</label>
+          <div className="profissionais-container">
+            {profissionaisList.map((prof, index) => (
+              <div key={index} className="profissional-item">
+                <input
+                  type="text"
+                  className="id-input"
+                  placeholder="ID"
+                  value={prof.id}
+                  onChange={(e) => handleProfissionalChange(index, 'id', e.target.value)}
+                />
+                <input
+                  type="text"
+                  className="nome-input"
+                  placeholder="Nome do profissional"
+                  value={prof.nome}
+                  onChange={(e) => handleProfissionalChange(index, 'nome', e.target.value)}
+                />
+                <button 
+                  type="button" 
+                  className="remove-profissional-btn"
+                  onClick={() => removeProfissional(index)}
+                  disabled={profissionaisList.length === 1}
+                >
+                  -
+                </button>
+              </div>
+            ))}
+            <button 
+              type="button" 
+              className="add-profissional-btn"
+              onClick={addProfissional}
+            >
+              +
+            </button>
+          </div>
         </div>
 
         <div className="form-actions">

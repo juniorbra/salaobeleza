@@ -11,6 +11,7 @@ export default function Dashboard() {
   const [error, setError] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [currentServico, setCurrentServico] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Carregar serviços ao montar o componente
   useEffect(() => {
@@ -22,7 +23,7 @@ export default function Dashboard() {
     setLoading(true);
     try {
       const data = await salaoService.getAll();
-      console.log("Serviços carregados:", data); // Log para debug
+      console.log("Serviços carregados:", data);
       setServicos(data);
       setError(null);
     } catch (err) {
@@ -89,105 +90,173 @@ export default function Dashboard() {
     return `R$ ${parseFloat(price).toFixed(2).replace('.', ',')}`;
   };
 
-  // Criar serviço de exemplo para teste
-  const criarServicoExemplo = async () => {
+  // Formatar profissionais para exibição
+  const formatProfissionais = (profissionaisString) => {
+    if (!profissionaisString) return '';
+    
     try {
-      const servicoExemplo = {
-        id_servico: "CORTE001",
-        nome_descricao: "Corte de Cabelo Feminino",
-        categoria: "Cabelo",
-        duracao: "45 min",
-        preco: "80.00",
-        profissionais: "Maria, Ana"
-      };
+      // Verifica se a string contém objetos JSON
+      if (profissionaisString.includes('"id":') || profissionaisString.includes("'id':")) {
+        // Tenta extrair usando regex
+        const profArray = [];
+        const regex = /\{.*?'id':\s*'(.*?)'.*?'nome':\s*'(.*?)'.*?\}/g;
+        let match;
+        
+        while ((match = regex.exec(profissionaisString)) !== null) {
+          profArray.push({ id: match[1], nome: match[2] });
+        }
+        
+        if (profArray.length > 0) {
+          return (
+            <div className="profissionais-list">
+              {profArray.map((prof, index) => (
+                <div key={index} className="profissional-tag">
+                  <span className="prof-id">{prof.id}</span>
+                  <span className="prof-nome">{prof.nome}</span>
+                </div>
+              ))}
+            </div>
+          );
+        }
+      }
       
-      const novoServico = await salaoService.create(servicoExemplo);
-      setServicos([...servicos, novoServico]);
-      alert("Serviço de exemplo criado com sucesso!");
-    } catch (err) {
-      console.error("Erro ao criar serviço de exemplo:", err);
-      alert("Erro ao criar serviço de exemplo: " + err.message);
+      // Se não conseguir extrair como JSON, divide por vírgula
+      const nomes = profissionaisString.split(',').map(nome => nome.trim());
+      return (
+        <div className="profissionais-list">
+          {nomes.map((nome, index) => (
+            <div key={index} className="profissional-tag simple">
+              {nome}
+            </div>
+          ))}
+        </div>
+      );
+    } catch (e) {
+      console.error("Erro ao formatar profissionais:", e);
+      return profissionaisString;
     }
   };
+
+  // Filtrar serviços com base no termo de pesquisa
+  const filteredServicos = servicos.filter(servico => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      (servico.id_servico && servico.id_servico.toLowerCase().includes(searchLower)) ||
+      (servico.nome_descricao && servico.nome_descricao.toLowerCase().includes(searchLower)) ||
+      (servico.categoria && servico.categoria.toLowerCase().includes(searchLower)) ||
+      (servico.profissionais && servico.profissionais.toLowerCase().includes(searchLower))
+    );
+  });
 
   return (
     <div className="dashboard">
       <header className="dashboard-header">
-        <h1>Salão Beleza - Gerenciamento de Serviços</h1>
-        <div className="user-info">
-          <span>Olá, {user?.email}</span>
-          <button onClick={signOut} className="logout-btn">Sair</button>
+        <div className="header-content">
+          <h1>Serviços do Salão de Beleza</h1>
+          <div className="user-info">
+            <span>Olá, {user?.email}</span>
+            <button onClick={signOut} className="logout-btn">Sair</button>
+          </div>
         </div>
       </header>
 
-      <main className="dashboard-content">
+      <main className="dashboard-content" style={{ display: 'block' }}>
         {error && <div className="error-message">{error}</div>}
 
-        <div className="actions-bar">
-          <h2>Serviços Disponíveis</h2>
+        <div className="dashboard-controls">
           <div className="action-buttons">
-            <button onClick={handleAddNew} className="add-btn">Adicionar Novo Serviço</button>
-            <button onClick={criarServicoExemplo} className="example-btn">Criar Serviço de Exemplo</button>
-            <button onClick={loadServicos} className="refresh-btn">Atualizar Lista</button>
+            <button onClick={handleAddNew} className="add-btn">
+              <span className="icon">+</span> Novo Serviço
+            </button>
+            <button onClick={loadServicos} className="refresh-btn">
+              <span className="icon">↻</span> Atualizar
+            </button>
+          </div>
+          <div className="search-bar">
+            <input
+              type="text"
+              placeholder="Pesquisar serviços..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input"
+            />
           </div>
         </div>
 
-        {loading ? (
-          <div className="loading">Carregando serviços...</div>
-        ) : servicos.length === 0 ? (
-          <div className="empty-state">
-            <p>Nenhum serviço cadastrado.</p>
-            <p>Clique em "Adicionar Novo Serviço" para começar ou use "Criar Serviço de Exemplo" para teste.</p>
-            <div className="empty-actions">
-              <button onClick={handleAddNew} className="add-btn">Adicionar Serviço</button>
-              <button onClick={criarServicoExemplo} className="example-btn">Criar Serviço de Exemplo</button>
+        <div className="dashboard-main-content">
+          {loading ? (
+            <div className="loading-container">
+              <div className="loading-spinner"></div>
+              <p>Carregando serviços...</p>
             </div>
-          </div>
-        ) : (
-          <div className="servicos-table-container">
-            <table className="servicos-table">
-              <thead>
-                <tr>
-                  <th>ID Serviço</th>
-                  <th>Nome/Descrição</th>
-                  <th>Categoria</th>
-                  <th>Duração</th>
-                  <th>Preço</th>
-                  <th>Profissionais</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {servicos.map(servico => (
-                  <tr key={servico.id}>
-                    <td>{servico.id_servico}</td>
-                    <td>{servico.nome_descricao}</td>
-                    <td>{servico.categoria}</td>
-                    <td>{servico.duracao}</td>
-                    <td>{formatPrice(servico.preco)}</td>
-                    <td>{servico.profissionais}</td>
-                    <td className="actions">
-                      <button 
-                        onClick={() => handleEdit(servico)} 
-                        className="edit-btn"
-                        title="Editar"
-                      >
-                        ✏️
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(servico.id)} 
-                        className="delete-btn"
-                        title="Excluir"
-                      >
-                        🗑️
-                      </button>
-                    </td>
+          ) : filteredServicos.length === 0 ? (
+            <div className="empty-state">
+              {searchTerm ? (
+                <>
+                  <p className="empty-title">Nenhum resultado encontrado</p>
+                  <p>Não encontramos serviços correspondentes à sua pesquisa.</p>
+                  <button onClick={() => setSearchTerm('')} className="clear-search-btn">
+                    Limpar pesquisa
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p className="empty-title">Nenhum serviço cadastrado</p>
+                  <p>Clique no botão "Novo Serviço" para adicionar um serviço ao catálogo.</p>
+                  <button onClick={handleAddNew} className="add-btn">
+                    <span className="icon">+</span> Novo Serviço
+                  </button>
+                </>
+              )}
+            </div>
+          ) : (
+            <div className="servicos-table-container">
+              <table className="servicos-table">
+                <thead>
+                  <tr>
+                    <th>ID Serviço</th>
+                    <th>Nome/Descrição</th>
+                    <th>Categoria</th>
+                    <th>Duração</th>
+                    <th>Preço</th>
+                    <th>Profissionais</th>
+                    <th>Ações</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                </thead>
+                <tbody>
+                  {filteredServicos.map(servico => (
+                    <tr key={servico.id}>
+                      <td>{servico.id_servico}</td>
+                      <td>{servico.nome_descricao}</td>
+                      <td>{servico.categoria}</td>
+                      <td>{servico.duracao}</td>
+                      <td>{formatPrice(servico.preco)}</td>
+                      <td className="profissionais-cell">
+                        {formatProfissionais(servico.profissionais)}
+                      </td>
+                      <td className="actions">
+                        <button 
+                          onClick={() => handleEdit(servico)} 
+                          className="edit-btn"
+                          title="Editar"
+                        >
+                          <span className="icon">✏️</span>
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(servico.id)} 
+                          className="delete-btn"
+                          title="Excluir"
+                        >
+                          <span className="icon">🗑️</span>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
 
         {showForm && (
           <div className="modal-overlay">
