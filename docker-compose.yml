@@ -3,10 +3,8 @@ version: '3.7'
 services:
   # Serviço da aplicação web
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: salaobeleza-app
+    image: ghcr.io/juniorbra/salaobeleza:v1.0.1
+    # Removido container_name pois não é suportado no modo Swarm
     
     networks:
       - portainer ## Nome da rede interna
